@@ -17,10 +17,11 @@ let currentObj = {
     high : 0,
     low : 0,
     time : 0,
-    volume: 0
+    volume: 0,
+    num: 0
 }
 
-let fiveMinObj = {...currentObj}
+let fiveMinObj = {...currentObj, num :0}
 let fifteenMinObj = {...currentObj}
 
 ws.on('message', async (data) => {
@@ -58,9 +59,70 @@ ws.on('message', async (data) => {
                 else {
                     if(currentObj){
                         //saving current obj into db
-                        console.log("dbbbbbb", currentObj)
-                        db.collection('test10').insertOne({...currentObj})
+                        console.log("dbbb11111bbb", currentObj)
+                        try{
+                            // console.log("?????111111111111")
+                            currentObj.num += 1
+                            db.collection('one_min_obj').insertOne({...currentObj})
+                            // console.log("?????????22222");
+                        }
+                        catch(err){
+                            console.log("?????",err)
+                        }
                         console.log(">>>", minNow , minTimestamp)
+
+                        console.log("here is the num", currentObj.num)
+
+                        if(fiveMinObj.open == 0) fiveMinObj.open = currentObj.open
+                        if(fiveMinObj.low == 0) fiveMinObj.low = currentObj.low
+                        fiveMinObj.volume += currentObj.volume
+
+                        if(currentObj.num%5 == 0){
+                            fiveMinObj.close = currentObj.close
+                            if(currentObj.high>fiveMinObj.high) fiveMinObj.high = currentObj.high
+                            if(currentObj.low<fiveMinObj.low) fiveMinObj.low = currentObj.low
+
+                            fiveMinObj.num++
+                            fiveMinObj.time = new Date().toUTCString()
+                            db.collection('five_min_obj').insertOne({...fiveMinObj})
+                            fiveMinObj.volume = 0
+
+                            fiveMinObj.open = fiveMinObj.close
+
+                            if(fifteenMinObj.open==0) fifteenMinObj.open = fiveMinObj.open
+                            if(fifteenMinObj.low == 0) fifteenMinObj.low = fiveMinObj.low
+                            fifteenMinObj.volume += fiveMinObj.volume
+
+                            if(fiveMinObj.num%3==0){
+
+                                fifteenMinObj.close = fiveMinObj.close
+                               if(fiveMinObj.high>fifteenMinObj.high) fifteenMinObj.high = fiveMinObj.high
+                               if(fiveMinObj.low<fifteenMinObj.low) fifteenMinObj.low = fiveMinObj.low
+                                fifteenMinObj.time = new Date().toUTCString()
+                                db.collection('fifteen_min').insertOne({...fifteenMinObj})
+
+                                fifteenMinObj.open = fifteenMinObj.close
+                                // fiveMinObj.num +=1
+                                fifteenMinObj.volume = 0
+
+                            }
+                            else{
+
+
+                                if(fiveMinObj.high>fifteenMinObj.high) fifteenMinObj.high = fiveMinObj.high
+                                if(fiveMinObj.low<fifteenMinObj.low) fifteenMinObj.low = fiveMinObj.low
+
+                            }
+                            
+                        }
+                        else{
+                            
+                            // fiveMinObj.close = currentObj.close
+                           if(currentObj.high>fiveMinObj.high) fiveMinObj.high = currentObj.high
+                           if(currentObj.low<fiveMinObj.low) fiveMinObj.low = currentObj.low
+
+                        }
+                        
                     }
                     minNow = minTimestamp
                     currentObj.open = currentObj.close
@@ -73,7 +135,6 @@ ws.on('message', async (data) => {
                     currentObj.volume = item.size
 
                 }
-
                 
             })
             
