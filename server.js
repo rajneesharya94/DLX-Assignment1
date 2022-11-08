@@ -4,8 +4,7 @@ import {saveData} from './controller/webSocketData.js'
 
 dotenv.config()
 
-// let db = client.db('mydb')
-console.log("code is working")
+console.log("started app successfully")
 
 const ws = new WebSocket(process.env.SOCKETURL)
 
@@ -32,11 +31,10 @@ ws.on('message', (data) => {
         if(currentArr){
 
             currentArr.forEach(item => {
-
-
+                
                 currentObj =  saveData(item, 1, currentObj, 'one_min_data')  // incoming data, minutes, current Object, collection name
-                fiveMinObj =  saveData(item ,5, fiveMinObj, 'five_min_data') // incoming data, minutes, current Object, collection name
-                fifteenMinObj =  saveData(item ,15, fifteenMinObj, 'fifteen_min_data')
+                fiveMinObj =  saveData(item , 5, fiveMinObj, 'five_min_data') // incoming data, minutes, current Object, collection name
+                fifteenMinObj =  saveData(item , 15, fifteenMinObj, 'fifteen_min_data')
                 
             })
             

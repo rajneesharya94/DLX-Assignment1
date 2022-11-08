@@ -1,7 +1,11 @@
 import { MongoClient } from 'mongodb';
+import {config} from 'dotenv'
+config()
 
 
-var url = "mongodb://127.0.0.1:27017/mydb";
+var url = process.env.MONGO_URI;
+console.log(">>>>", url)
+
 
 export const connectDB = async() => {
     try {
