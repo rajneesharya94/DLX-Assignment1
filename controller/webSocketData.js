@@ -1,96 +1,56 @@
-import WebSocket from "ws";
-import dotenv from 'dotenv'
-
-dotenv.config()
-import {connectDB} from './db.js'
+import {connectDB} from '../db.js'
 let db = await connectDB()
-// let db = client.db('mydb')
-console.log("code is working")
 
-const ws = new WebSocket(process.env.SOCKETURL)
-
-let minNow = new Date()
-minNow = minNow.getUTCMinutes()
-let currentObj = {
-    open : 0,
-    close : 0,
-    high : 0,
-    low : 0,
-    time : 0,
-    volume: 0
+function roundOffHigherFunc (minutes, date = new Date()){
+    const ms = 1000 * 60 * minutes;
+      return new Date(Math.ceil(date.getTime() / ms) * ms);
 }
 
-ws.on('message', async (data) => {
+export let saveData = (item, minutes, currentObj, collectionName) => {
 
-    data = JSON.parse(data.toString())
-
-    if(data && data.table=='trade' &&  data["data"]) {
-        let currentArr = data.data
-        // console.log("?????",data.data)
-        // console.log(">>>>>",minNow)
-
-        if(currentArr){
-
-            currentArr.forEach(item => {
-
-                let timestamp = item.timestamp
-                let minDatestamp = new Date(timestamp)
-                let minTimestamp = minDatestamp.getUTCMinutes()
-
-                console.log(">>>", minNow , minTimestamp, currentObj)
-
-                if(currentObj.open == 0) currentObj.open = item.price
-                if(currentObj.low == 0) currentObj.low = item.price
-
-                if(minNow == minTimestamp){
-                    // console.log("high", item.price > currentObj.high, item.price , currentObj.high)
-                    // console.log("high", item.price < currentObj.high, item.price , currentObj.high)
-                    // console.log("open",minDatestamp < new Date(currentObj.time),minDatestamp, new Date(currentObj.time)  )
-                    
-
-                    // if(minDatestamp < new Date(currentObj.time)) currentObj.open = item.price
-                    // else if(currentObj.open == 0) currentObj.open = item.price
-                    if(minDatestamp > new Date(currentObj.time)) currentObj.close = item.price
-                    if(item.price > currentObj.high) currentObj.high = item.price
-                    if(item.price < currentObj.low) currentObj.low = item.price
-                    // else if(currentObj.low == 0) currentObj.low = item.price
-                    currentObj.time = item.timestamp
-                    currentObj.volume += item.size
-
-                    // console.log("curr", currentObj)
+    console.log(currentObj.time, item.timestamp)
+    // let roundOffHigher = currentObj.time? currentObj.time : roundOffHigherFunc(minutes)
+    if(currentObj.time == null){
+        currentObj.time = roundOffHigherFunc(minutes)
+    }
+    let itemRoundOff = new Date(item.timestamp)
+    itemRoundOff.setMilliseconds(0)
 
 
-                }
+    if(currentObj.open == 0) currentObj.open = item.price
+    if(currentObj.low == 0) currentObj.low = item.price
 
-                else {
-                    if(currentObj){
-                        //saving current obj into db
-                        console.log("dbbbbbb", currentObj)
-                        db.collection('test10').insertOne({...currentObj})
-                    }
-                   minNow = minTimestamp
-                   currentObj.open = currentObj.close
-                   // currentObj.open = currentObj.close
-                    item.price > currentObj.close ? currentObj.high = item.price : currentObj.high = currentObj.close
+    console.log(currentObj.time,itemRoundOff,currentObj.time>itemRoundOff)
 
-                    item.price < currentObj.close ? currentObj.low = item.price : currentObj.low = currentObj.close
+    if(currentObj.time > itemRoundOff){
 
-                    currentObj.close = item.price
+        //if roundOffTime is same as data timestamp then update current obj else save it 
 
-                    currentObj.volume = item.size
+        currentObj.close = item.price
+        if(item.price > currentObj.high) currentObj.high = item.price
+        if(item.price < currentObj.low) currentObj.low = item.price
 
-                }
-
-                
-            })
-            
-        }
-
-      
-
-
+        currentObj.volume += item.size
     }
 
+    else {
+        db.collection(collectionName).insertOne({...currentObj})
+
+        currentObj.time = roundOffHigherFunc(minutes, new Date(item.timestamp))
+        currentObj.open = currentObj.close
+        item.price > currentObj.close ? currentObj.high = item.price : currentObj.high = currentObj.close
+
+        item.price < currentObj.close ? currentObj.low = item.price : currentObj.low = currentObj.close
+
+        currentObj.close = item.price
+
+        currentObj.volume = item.size
+
+    }
+    // currentObj.time = roundOffHigher
+
+    console.log(currentObj)
+    return currentObj;
 
 
-})
+}
