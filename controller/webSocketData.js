@@ -8,48 +8,70 @@ function roundOffHigherFunc (minutes, date = new Date()){
 
 export let saveData = (item, minutes, currentObj, collectionName) => {
 
-    console.log(currentObj.time, item.timestamp)
+    // console.log(currentObj.time, item.T)
     // let roundOffHigher = currentObj.time? currentObj.time : roundOffHigherFunc(minutes)
     if(currentObj.time == null){
         currentObj.time = roundOffHigherFunc(minutes)
     }
-    let itemRoundOff = new Date(item.timestamp)
-    itemRoundOff.setMilliseconds(0)
+    let itemRoundOff = new Date(item.T)
+    // itemRoundOff.setMilliseconds(0)
 
+    item.p = Number(item.p)
+    item.q = Number(item.q)
+    if(currentObj.open == 0) currentObj.open = item.p
+    if(currentObj.low == 0) currentObj.low = item.p
 
-    if(currentObj.open == 0) currentObj.open = item.price
-    if(currentObj.low == 0) currentObj.low = item.price
+    // console.log(currentObj.time,itemRoundOff,currentObj.time>itemRoundOff, currentObj)
 
-    console.log(currentObj.time,itemRoundOff,currentObj.time>itemRoundOff)
+    if(new Date(currentObj.time).valueOf() >= itemRoundOff.valueOf()){
+        // console.log("iff")
 
-    if(currentObj.time > itemRoundOff){
+        //if roundOffTime is same as data T then update current obj else save it 
 
-        //if roundOffTime is same as data timestamp then update current obj else save it 
+        currentObj.close = item.p
+        if(item.p > currentObj.high) currentObj.high = item.p
+        if(item.p < currentObj.low) currentObj.low = item.p
 
-        currentObj.close = item.price
-        if(item.price > currentObj.high) currentObj.high = item.price
-        if(item.price < currentObj.low) currentObj.low = item.price
-
-        currentObj.volume += item.size
+        currentObj.volume += item.q
     }
+    // else if(new Date(currentObj.time).valueOf() == itemRoundOff.valueOf()){
+
+    //     let sameTime = new Date(item.T)
+    //     console.log("sameTime", sameTime)
+    //     sameTime.setMilliseconds(sameTime.getMilliseconds()+1)
+    //     console.log("sameTime11", sameTime)
+    //     currentObj.time = roundOffHigherFunc(minutes, sameTime)
+    //     console.log("equal")
+    //     currentObj.open = currentObj.close
+    //     item.p > currentObj.close ? currentObj.high = item.p : currentObj.high = currentObj.close
+
+    //     item.p < currentObj.close ? currentObj.low = item.p : currentObj.low = currentObj.close
+
+    //     currentObj.close = item.p
+
+    //     currentObj.volume = item.q
+
+    // }
 
     else {
-        db.collection(collectionName).insertOne({...currentObj})
+        console.log(currentObj.time,itemRoundOff,currentObj.time>itemRoundOff, currentObj)
 
-        currentObj.time = roundOffHigherFunc(minutes, new Date(item.timestamp))
+       db.collection(collectionName).insertOne({...currentObj, createdAt: new Date().toISOString()})
+
+        currentObj.time = roundOffHigherFunc(minutes, new Date(item.T))
         currentObj.open = currentObj.close
-        item.price > currentObj.close ? currentObj.high = item.price : currentObj.high = currentObj.close
+        item.p > currentObj.close ? currentObj.high = item.p : currentObj.high = currentObj.close
 
-        item.price < currentObj.close ? currentObj.low = item.price : currentObj.low = currentObj.close
+        item.p < currentObj.close ? currentObj.low = item.p : currentObj.low = currentObj.close
 
-        currentObj.close = item.price
+        currentObj.close = item.p
 
-        currentObj.volume = item.size
+        currentObj.volume = item.q
 
     }
     // currentObj.time = roundOffHigher
 
-    console.log(currentObj)
+    // console.log(currentObj)
     return currentObj;
 
 
