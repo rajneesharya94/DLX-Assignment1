@@ -19,7 +19,7 @@ function getTimeArr (start, end, minutes) {
         // i++
     
     
-    for(let i=1; i<=diff; i++){
+    for(let i=0; i<=diff; i++){
         console.log(start)
         arr.push(roundOffStart)
         roundOffStart = new Date(roundOffStart)
@@ -53,6 +53,9 @@ export const exchangeData = async(req, res) => {
         let openArr = []
         let timeArr = getTimeArr(startTime, endTime,duration )
             console.log("timearr", timeArr)
+            timeArr.forEach(item=>{
+                
+            })
             
             
             return res.send({'result':timeArr})
