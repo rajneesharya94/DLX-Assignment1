@@ -20,7 +20,7 @@ function getTimeArr (start, end, minutes) {
         
         let roundOffStart = roundOffHigherFunc(minutes, start)
         let roundOffPreStart = roundOffLowerFunc(minutes,start)
-        arr.push(roundOffPreStart)
+        // arr.push(roundOffPreStart)
         // i++
     
     
@@ -55,6 +55,7 @@ export const exchangeData = async(req, res) => {
 
     ]).toArray().then(r=>{
         console.log("????r??",r)
+        if(r && r.length ==0) return res.status(400).send({"error":"data not found for given time"})
         
         let openArr = []
         let closeArr = []
@@ -64,7 +65,6 @@ export const exchangeData = async(req, res) => {
         let timeArr = getTimeArr(startTime, endTime,duration )
         timeArr.forEach(item=>{
             console.log("timearr", timeArr)
-            let index
             let flag = true
                 for(let i=0; i<r.length; i++ ){
                     console.log("condition",item.valueOf()==r[i].time.valueOf() )
@@ -87,19 +87,9 @@ export const exchangeData = async(req, res) => {
                         volArr.push(null)
 
                 }
-                // else if(r[index]){
-                //     openArr.push(r[index].open)
-                //     closeArr.push(r[index].close)
-                //      closeArr.push(r[index].close)
-                //     lowArr.push(r[index].low)
-                //     volArr.push(r[index].volume)
-                // }
                 
             })
-            
-            
-            
-            return res.send({'result':openArr,closeArr,highArr,lowArr,volArr})
+            return res.status(200).json({'result':{openArr,closeArr,highArr,lowArr,volArr}})
     })
     
 
