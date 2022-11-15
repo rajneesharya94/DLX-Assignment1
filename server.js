@@ -1,89 +1,24 @@
-import WebSocket from "ws";
-import dotenv from 'dotenv'
+import { createServer } from 'http';
+import { WebSocketServer } from 'ws';
 
-dotenv.config()
-import {connectDB} from './db.js'
-let db = await connectDB()
-// let db = client.db('mydb')
-console.log("code is working")
+const server = createServer((request, response)=>{
+    response.writeHead(200, { "Content-Type": "text/html" });
+    response.write("message ==> Server is live.");
+    response.end();
+});
+const wss = new WebSocketServer({ server });
 
-const ws = new WebSocket(process.env.SOCKETURL)
+wss.on('connection', function connection(ws) {
+  ws.on('message', function message(data) {
+    console.log('received:', data);
+  });
 
-let minNow = new Date()
-minNow = minNow.getUTCMinutes()
-let currentObj = {
-    open : 0,
-    close : 0,
-    high : 0,
-    low : 0,
-    time : 0,
-    volume: 0
-}
-
-let fiveMinObj = {...currentObj}
-let fifteenMinObj = {...currentObj}
-
-ws.on('message', async (data) => {
-
-    data = JSON.parse(data.toString())
-
-    if(data && data.table=='trade' &&  data["data"]) {
-        let currentArr = data.data
-        // console.log("?????",data.data)
-        // console.log(">>>>>",minNow)
-
-        if(currentArr){
-
-            currentArr.forEach(item => {
-
-                let timestamp = item.timestamp
-                let minDatestamp = new Date(timestamp)
-                let minTimestamp = minDatestamp.getUTCMinutes()
-
-
-                if(currentObj.open == 0) currentObj.open = item.price
-                if(currentObj.low == 0) currentObj.low = item.price
-
-                if(minNow == minTimestamp){
-
-                    if(minDatestamp > new Date(currentObj.time)) currentObj.close = item.price
-                    if(item.price > currentObj.high) currentObj.high = item.price
-                    if(item.price < currentObj.low) currentObj.low = item.price
-
-                    currentObj.time = item.timestamp
-                    currentObj.volume += item.size
-
-                }
-
-                else {
-                    if(currentObj){
-                        //saving current obj into db
-                        console.log("dbbbbbb", currentObj)
-                        db.collection('test10').insertOne({...currentObj})
-                        console.log(">>>", minNow , minTimestamp)
-                    }
-                    minNow = minTimestamp
-                    currentObj.open = currentObj.close
-                    item.price > currentObj.close ? currentObj.high = item.price : currentObj.high = currentObj.close
-
-                    item.price < currentObj.close ? currentObj.low = item.price : currentObj.low = currentObj.close
-
-                    currentObj.close = item.price
-
-                    currentObj.volume = item.size
-
-                }
-
-                
-            })
-            
-        }
-
-      
-
-
-    }
-
-
-
+  ws.send('something');
+  ws.on("close", (req) => {
+    console.log("Websocket client connection closed", req);
 })
+});
+
+server.listen(3000, ()=>{
+    console.log('server started')
+});
