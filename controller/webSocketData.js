@@ -56,7 +56,7 @@ export let saveData = (item, minutes, currentObj, collectionName) => {
     else {
         console.log(currentObj.time,itemRoundOff,currentObj.time>itemRoundOff, currentObj)
 
-       db.collection(collectionName).insertOne({...currentObj, createdAt: new Date().toISOString()})
+    //    db.collection(collectionName).insertOne({...currentObj, createdAt: new Date().toISOString()})
 
         currentObj.time = roundOffHigherFunc(minutes, new Date(item.T))
         currentObj.open = currentObj.close
