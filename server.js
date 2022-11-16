@@ -40,9 +40,9 @@ ws.on('message', (data) => {
     data = JSON.parse(data.toString())
     if(data){
 
-        oneMinObj    =  saveData(data, 1, oneMinObj, 'one_min_data_BINANCE') // incoming data, minutes, current Object, collection name
-        fiveMinObj    =  saveData(data , 5, fiveMinObj, 'five_min_data_BINANCE') // incoming data, minutes, current Object, collection name
-        fifteenMinObj =  saveData(data , 15, fifteenMinObj, 'fifteen_min_data_BINANCE')
+        oneMinObj    =  saveData(data, 1, oneMinObj, '1m_data_binance') // incoming data, minutes, current Object, collection name
+        fiveMinObj    =  saveData(data , 5, fiveMinObj, '5m_data_binance') // incoming data, minutes, current Object, collection name
+        fifteenMinObj =  saveData(data , 15, fifteenMinObj, '15m_data_binance')
             
     }
 
