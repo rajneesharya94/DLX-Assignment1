@@ -32,9 +32,9 @@ ws.on('message', (data) => {
 
             currentArr.forEach(item => {
                 
-                currentObj =  saveData(item, 1, currentObj, 'one_min_data')  // incoming data, minutes, current Object, collection name
-                fiveMinObj =  saveData(item , 5, fiveMinObj, 'five_min_data') // incoming data, minutes, current Object, collection name
-                fifteenMinObj =  saveData(item , 15, fifteenMinObj, 'fifteen_min_data')
+                currentObj =  saveData(item, 1, currentObj, `1_min_data_bitmex`)  // incoming data, minutes, current Object, collection name
+                fiveMinObj =  saveData(item , 5, fiveMinObj, '5_min_data_bitmex') // incoming data, minutes, current Object, collection name
+                fifteenMinObj =  saveData(item , 15, fifteenMinObj, '15_min_data_bitmex')
                 
             })
             
