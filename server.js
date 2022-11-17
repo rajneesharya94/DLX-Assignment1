@@ -8,18 +8,11 @@ console.log("started app successfully")
 
 const ws = new WebSocket(process.env.SOCKETURL)
 
-let currentObj = {
-    open : 0,
-    close : 0,
-    high : 0,
-    low : 0,
-    time : null,
-    volume: 0,
-}
+let currentObj = {open : 0, close : 0, high : 0, low : 0, time : null, volume: 0}
 
+let fiveMinObj = { open : 0, close : 0, high : 0, low : 0, time : null, volume: 0}
 
-let fiveMinObj = {...currentObj}
-let fifteenMinObj = {...currentObj}
+let fifteenMinObj = { open : 0, close : 0, high : 0, low : 0, time : null, volume: 0,}
 
 ws.on('message', (data) => {
 

@@ -14,7 +14,7 @@ export let saveData = (item, minutes, currentObj, collectionName) => {
         currentObj.time = roundOffHigherFunc(minutes)
     }
     let itemRoundOff = new Date(item.timestamp)
-    itemRoundOff.setMilliseconds(0)
+    // itemRoundOff.setMilliseconds(0)
 
 
     if(currentObj.open == 0) currentObj.open = item.price
@@ -22,7 +22,7 @@ export let saveData = (item, minutes, currentObj, collectionName) => {
 
     console.log(currentObj.time,itemRoundOff,currentObj.time>itemRoundOff)
 
-    if(currentObj.time > itemRoundOff){
+    if(new Date(currentObj.time).valueOf() >= itemRoundOff.valueOf()){
 
         //if roundOffTime is same as data timestamp then update current obj else save it 
 
