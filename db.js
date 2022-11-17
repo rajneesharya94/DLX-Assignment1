@@ -11,7 +11,7 @@ export const connectDB = async() => {
     try {
 
         const client = new MongoClient(url)
-       let db =  (await client.connect()).db('BINANCE_OCHLV_DATA')
+       let db =  (await client.connect()).db('mydb')
         console.log("db started")
 
         return db
