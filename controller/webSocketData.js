@@ -1,5 +1,6 @@
 import {connectDB} from '../db.js'
 let db = await connectDB()
+import {runProd} from '../kafka/producer'
 
 function roundOffHigherFunc (minutes, date = new Date()){
     const ms = 1000 * 60 * minutes;
@@ -7,6 +8,11 @@ function roundOffHigherFunc (minutes, date = new Date()){
 }
 
 export let saveData = (item, minutes, currentObj, collectionName) => {
+
+
+    if(item == null){
+        //push in producer
+    }
 
     // console.log(currentObj.time, item.T)
     // let roundOffHigher = currentObj.time? currentObj.time : roundOffHigherFunc(minutes)

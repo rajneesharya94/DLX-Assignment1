@@ -18,15 +18,15 @@ const sendMessage = () => {
       .send({
         topic,
         // compression: CompressionTypes.GZIP,
-        messages:[ { key: 'key-1', value: 'value-1-2022-11-16T12:38:14.178Z' } ],
+        messages:[ { key: 'key-1', value: 'value-1-2022-11-16T12:38:14.178Z' } ]
       })
       .then(console.log)
       .catch(e => console.error(`[example/producer] ${e.message}`, e))
   }
 
-const run = async () =>{
+const runProd = async () =>{
     await producer.connect()
     setInterval(sendMessage,1000)
 }
 
-run().catch(e => console.error(`[example/producer] ${e.message}`, e))
+runProd().catch(e => console.error(`[example/producer] ${e.message}`, e))
