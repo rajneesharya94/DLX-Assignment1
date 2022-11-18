@@ -1,6 +1,7 @@
 import {connectDB} from '../db.js'
 let db = await connectDB()
-import {runProd} from '../kafka/producer'
+import {runProd} from '../kafka/producer.js'
+// import {runConsumer} from '../kafka/consumer.js'
 
 function roundOffHigherFunc (minutes, date = new Date()){
     const ms = 1000 * 60 * minutes;
@@ -9,13 +10,13 @@ function roundOffHigherFunc (minutes, date = new Date()){
 
 export let saveData = (item, minutes, currentObj, collectionName) => {
 
+    // if(item==null){
+    //     console.log('save data callled');
+    //     runProd([{value:JSON.stringify({"1m": {...oneMinObj}})}])
+    //     reutn
+    // }
 
-    if(item == null){
-        //push in producer
-    }
 
-    // console.log(currentObj.time, item.T)
-    // let roundOffHigher = currentObj.time? currentObj.time : roundOffHigherFunc(minutes)
     if(currentObj.time == null){
         currentObj.time = roundOffHigherFunc(minutes)
     }
@@ -40,24 +41,7 @@ export let saveData = (item, minutes, currentObj, collectionName) => {
 
         currentObj.volume += item.q
     }
-    // else if(new Date(currentObj.time).valueOf() == itemRoundOff.valueOf()){
-
-    //     let sameTime = new Date(item.T)
-    //     console.log("sameTime", sameTime)
-    //     sameTime.setMilliseconds(sameTime.getMilliseconds()+1)
-    //     console.log("sameTime11", sameTime)
-    //     currentObj.time = roundOffHigherFunc(minutes, sameTime)
-    //     console.log("equal")
-    //     currentObj.open = currentObj.close
-    //     item.p > currentObj.close ? currentObj.high = item.p : currentObj.high = currentObj.close
-
-    //     item.p < currentObj.close ? currentObj.low = item.p : currentObj.low = currentObj.close
-
-    //     currentObj.close = item.p
-
-    //     currentObj.volume = item.q
-
-    // }
+    
 
     else {
         console.log(currentObj.time,itemRoundOff,currentObj.time>itemRoundOff, currentObj)
@@ -78,6 +62,9 @@ export let saveData = (item, minutes, currentObj, collectionName) => {
     // currentObj.time = roundOffHigher
 
     // console.log(currentObj)
+
+    runProd([{value:JSON.stringify({[`${minutes}m`]: {...currentObj}})}])
+
     return currentObj;
 
 

@@ -11,22 +11,25 @@ const kafka = new Kafka({
 })
 
 const topic = 'topic-test'
+
+
+// const sendMessage = 
+
 const producer = kafka.producer()
-
-const sendMessage = () => {
-    return producer
-      .send({
-        topic,
-        // compression: CompressionTypes.GZIP,
-        messages:[ { key: 'key-1', value: 'value-1-2022-11-16T12:38:14.178Z' } ]
-      })
-      .then(console.log)
-      .catch(e => console.error(`[example/producer] ${e.message}`, e))
-  }
-
-const runProd = async () =>{
-    await producer.connect()
-    setInterval(sendMessage,1000)
+export const runProd = async (data) =>{
+  console.log("calllledd run prod")
+  await producer.connect()
+  // console.log({producer});
+    // setInterval(() => {
+      producer
+        .send({
+          topic,
+          // compression: CompressionTypes.GZIP,
+          messages:data
+        })
+        .then(console.log("Sent to kafka"))
+        .catch(e => console.error(`[example/producer] ${e.message}`, e))
+    // },2000)
 }
 
-runProd().catch(e => console.error(`[example/producer] ${e.message}`, e))
+// runProd().catch(e => console.error(`[example/producer] ${e.message}`, e))

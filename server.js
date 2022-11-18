@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import {saveData} from './controller/webSocketData.js'
 
 import cron from 'node-cron';
+import { runProd } from "./kafka/producer.js";
 
 
 
@@ -24,19 +25,22 @@ ws.on('message', (data) => {
     if(data){
 
         oneMinObj    =  saveData(data, 1, oneMinObj, 'one_min_data_BINANCE') // incoming data, minutes, current Object, collection name
-        fiveMinObj    =  saveData(data , 5, fiveMinObj, 'five_min_data_BINANCE') // incoming data, minutes, current Object, collection name
-        fifteenMinObj =  saveData(data , 15, fifteenMinObj, 'fifteen_min_data_BINANCE')
+        // fiveMinObj    =  saveData(data , 5, fiveMinObj, 'five_min_data_BINANCE') // incoming data, minutes, current Object, collection name
+        // fifteenMinObj =  saveData(data , 15, fifteenMinObj, 'fifteen_min_data_BINANCE')
             
     }
 
 })
 
 // task.start()
-cron.schedule('*/10 * * * * *', () => {
-    // console.log('running a task every 10th second', new Date().toISOString());
-    oneMinObj    =  saveData(null, 1, oneMinObj, 'one_min_data_BINANCE') // incoming data, minutes, current Object, collection name
-    fiveMinObj    =  saveData(null , 5, fiveMinObj, 'five_min_data_BINANCE') // incoming data, minutes, current Object, collection name
-    fifteenMinObj =  saveData(null , 15, fifteenMinObj, 'fifteen_min_data_BINANCE')    
+// cron.schedule('*/5 * * * * *', () => {
+//     console.log('running a task every 10th second', new Date().toISOString());
 
-});
+//     runProd([{value:JSON.stringify({"1m": {...oneMinObj, createdAt:new Date().toISOString()}})}])
+//     runProd([{value:JSON.stringify({"5m": {...fiveMinObj}})}])
+//     runProd([{value:JSON.stringify({"15m": {...fifteenMinObj}})}])
+//         // saveData(null, 1, oneMinObj, 'one_min_data_BINANCE') // incoming data, minutes, current Object, collection name
+//         // fiveMinObj    =  saveData(null , 5, fiveMinObj, 'five_min_data_BINANCE') // incoming data, minutes, current Object, collection name
+//         // fifteenMinObj =  saveData(null , 15, fifteenMinObj, 'fifteen_min_data_BINANCE')
+// });
   
