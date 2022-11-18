@@ -1,4 +1,4 @@
-import {Kafka, logLevel, CompressionTypes} from 'kafkajs';
+import {Kafka} from 'kafkajs';
 import dotenv from 'dotenv'
 dotenv.config()
 

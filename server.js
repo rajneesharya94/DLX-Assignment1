@@ -2,11 +2,6 @@ import WebSocket from "ws";
 import dotenv from 'dotenv'
 import {saveData} from './controller/webSocketData.js'
 
-import cron from 'node-cron';
-import { runProd } from "./kafka/producer.js";
-
-
-
 dotenv.config()
 
 console.log("App started successfully")

@@ -1,7 +1,6 @@
 import {connectDB} from '../db.js'
 let db = await connectDB()
 import {runProd} from '../kafka/producer.js'
-// import {runConsumer} from '../kafka/consumer.js'
 
 function roundOffHigherFunc (minutes, date = new Date()){
     const ms = 1000 * 60 * minutes;
@@ -56,6 +55,8 @@ export let saveData = (item, minutes, currentObj, collectionName) => {
 
     // console.log(currentObj)
 
+
+    //Sending current object to producer (Dynamically for every minute)
     runProd([{value:JSON.stringify({[`${minutes}m`]: {...currentObj}})}])
 
     return currentObj;
