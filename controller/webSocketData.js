@@ -10,13 +10,6 @@ function roundOffHigherFunc (minutes, date = new Date()){
 
 export let saveData = (item, minutes, currentObj, collectionName) => {
 
-    // if(item==null){
-    //     console.log('save data callled');
-    //     runProd([{value:JSON.stringify({"1m": {...oneMinObj}})}])
-    //     reutn
-    // }
-
-
     if(currentObj.time == null){
         currentObj.time = roundOffHigherFunc(minutes)
     }
