@@ -1,0 +1,21 @@
+service: first-testFunc
+# region: ohio
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+
+# package:
+#   exclude:
+#   - node_modules
+
+functions:
+  api:
+    handler: handler.hello
+    events:
+      - http:
+          path: /hello
+          method: GET
+
+
